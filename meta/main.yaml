@@ -1,0 +1,26 @@
+---
+galaxy_info:
+  role_name: common
+  author: "Rubens Franco"
+  description: "Common configurations and packages"
+  license: "GNU GENERAL PUBLIC LICENSE v2"
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "jammy"
+        - "focal"
+        - "bionic"
+    - name: Debian
+      versions:
+        - "bullseye"
+        - "buster"
+    - name: EL
+      versions:
+        - "9"
+        - "8"
+  galaxy_tags:
+    - common
+    - setup
+    - linux
+dependencies: []

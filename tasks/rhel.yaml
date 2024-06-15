@@ -1,0 +1,163 @@
+---
+# https://www.digitalocean.com/community/questions/cento-os-8-not-updating
+- name: "Common | Update rpm"  # noqa package-latest
+  ansible.builtin.dnf:
+    name: rpm
+    state: latest
+    update_cache: true
+
+- name: "Common | Add EPEL repository"
+  ansible.builtin.command:
+    cmd: "/usr/bin/dnf install epel-release -y"
+  changed_when: false
+
+- name: "Common | Update all packages to their latest version"  # noqa package-latest
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_cache: true
+
+- name: "Common | Packages installation"
+  ansible.builtin.dnf:
+    name:
+      - "ca-certificates"
+      - "cloud-init"
+      - "curl"
+      - "ccze"
+      - "dnf-utils"
+      - "git"
+      - "gnupg"
+      - "htop"
+      - "jq"
+      - "lsof"
+      - "lvm2"
+      - "make"
+      - "ncdu"
+      - "net-tools"
+      - "parted"
+      - "pkgconf-pkg-config"
+      - "python3"
+      - "python3-docker"
+      - "python3-jinja2"
+      - "python3-pip"
+      - "python3-pyyaml"
+      - "python3-psutil"
+      - "rng-tools"
+      - "screen"
+      - "sysstat"
+      - "tree"
+      - "ufw"
+      - "unzip"
+      - "vim"
+      - "yum-utils"
+      - "zip"
+      - "zlib"
+    state: present
+    update_cache: true
+
+- name: "Common | Install Redhat-lsb-core"
+  ansible.builtin.dnf:
+    name:
+      - redhat-lsb-core
+  when: ansible_facts['distribution'] == "RedHat"
+
+- name: "Common | Remove insecure legacy packages if they are still present"
+  ansible.builtin.dnf:
+    name:
+      - xinetd
+      - yp-tools
+      - telnet-server
+      - rsh-server
+    state: absent
+
+- name: "Common | Autoremove unneeded packages installed as dependencies"
+  ansible.builtin.dnf:
+    autoremove: true
+
+- name: "Common | Install varnishgather"
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/varnish/varnishgather/master/varnishgather"
+    dest: "/usr/local/bin/varnishgather"
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: "Common | Clone misc Github repository"
+  ansible.builtin.git:
+    repo: "git@github.com:varnish/misc.git"
+    dest: "{{ common_base_dir }}/misc"
+    update: true
+    version: master
+    accept_hostkey: true
+  vars:
+    ansible_become: false
+
+- name: "Common | Install gather-analysis script"
+  ansible.builtin.copy:
+    src: "{{ common_base_dir }}/misc/gather-analysis/gather-analysis"
+    dest: "/usr/local/bin/gather-analysis"
+    mode: "0755"
+    owner: root
+    group: root
+    remote_src: true
+
+- name: "Common | Install hitrate script"
+  ansible.builtin.copy:
+    src: "hitrate"
+    dest: "/usr/local/bin/hitrate"
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: "Common | Set timezone to {{ common_timezone }}"
+  community.general.timezone:
+    name: "{{ common_timezone }}"
+
+- name: "Common | Set limits.conf"
+  ansible.builtin.copy:
+    src: "limits.conf"
+    dest: "/etc/security/limits.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+- name: "Common | Create directory /etc/varnish_software"
+  ansible.builtin.file:
+    path: "/etc/varnish_software"
+    state: directory
+    mode: "0750"
+    owner: "root"
+    group: "root"
+
+- name: "Common | Copy journald.conf configuration template to /etc/systemd"
+  ansible.builtin.copy:
+    src: "journald.conf"
+    dest: "/etc/systemd/journald.conf"
+    mode: "0644"
+    owner: root
+    group: root
+  notify: "Restart journald"
+
+- name: "Common | Copy rsyslog rotate config file to /etc/logrotate.d/"
+  ansible.builtin.copy:
+    src: "rsyslog"
+    dest: "/etc/logrotate.d/syslog"
+    mode: "0644"
+    owner: root
+    group: root
+  notify: "Restart rsyslog"
+
+- name: "Common | Set vm.swappiness default"
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: '10'
+    state: present
+    reload: true
+
+# Needed in DigitalOcean hosts
+- name: "Common | Restart systemd-journald"
+  ansible.builtin.systemd:
+    name: systemd-journald
+    state: restarted
+    enabled: true
+    daemon_reload: true

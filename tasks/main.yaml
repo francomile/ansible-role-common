@@ -1,0 +1,10 @@
+---
+- name: "Common | Install common packages and define settings"
+  ansible.builtin.include_tasks: debian.yaml
+  when: ansible_os_family == 'Debian'
+  tags: ["common"]
+
+- name: "Common | Install common packages and define settings"
+  ansible.builtin.include_tasks: rhel.yaml
+  when: ansible_os_family == 'RedHat'
+  tags: ["common"]

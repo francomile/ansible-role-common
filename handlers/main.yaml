@@ -1,0 +1,14 @@
+---
+- name: "Restart journald"
+  ansible.builtin.systemd:
+    name: systemd-journald
+    state: restarted
+    enabled: true
+    daemon_reload: true
+
+- name: "Restart rsyslog"
+  ansible.builtin.systemd:
+    name: rsyslog
+    state: restarted
+    enabled: true
+    daemon_reload: true
