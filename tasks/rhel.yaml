@@ -74,41 +74,6 @@
   ansible.builtin.dnf:
     autoremove: true
 
-- name: "Common | Install varnishgather"
-  ansible.builtin.get_url:
-    url: "https://raw.githubusercontent.com/varnish/varnishgather/master/varnishgather"
-    dest: "/usr/local/bin/varnishgather"
-    mode: "0755"
-    owner: root
-    group: root
-
-- name: "Common | Clone misc Github repository"
-  ansible.builtin.git:
-    repo: "git@github.com:varnish/misc.git"
-    dest: "{{ common_base_dir }}/misc"
-    update: true
-    version: master
-    accept_hostkey: true
-  vars:
-    ansible_become: false
-
-- name: "Common | Install gather-analysis script"
-  ansible.builtin.copy:
-    src: "{{ common_base_dir }}/misc/gather-analysis/gather-analysis"
-    dest: "/usr/local/bin/gather-analysis"
-    mode: "0755"
-    owner: root
-    group: root
-    remote_src: true
-
-- name: "Common | Install hitrate script"
-  ansible.builtin.copy:
-    src: "hitrate"
-    dest: "/usr/local/bin/hitrate"
-    mode: "0755"
-    owner: root
-    group: root
-
 - name: "Common | Set timezone to {{ common_timezone }}"
   community.general.timezone:
     name: "{{ common_timezone }}"
@@ -120,14 +85,6 @@
     owner: "root"
     group: "root"
     mode: "0644"
-
-- name: "Common | Create directory /etc/varnish_software"
-  ansible.builtin.file:
-    path: "/etc/varnish_software"
-    state: directory
-    mode: "0750"
-    owner: "root"
-    group: "root"
 
 - name: "Common | Copy journald.conf configuration template to /etc/systemd"
   ansible.builtin.copy:

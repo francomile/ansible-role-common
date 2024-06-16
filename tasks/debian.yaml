@@ -96,14 +96,6 @@
     owner: "root"
     group: "root"
 
-- name: "Common | Create directory /etc/varnish_software"
-  ansible.builtin.file:
-    path: "/etc/varnish_software"
-    state: directory
-    mode: "0750"
-    owner: "root"
-    group: "root"
-
 - name: "Common | Copy journald.conf configuration template to /etc/systemd"
   ansible.builtin.copy:
     src: "journald.conf"
