@@ -1,4 +1,4 @@
-# Common role
+# Ansible Common Role
 
 [![Lint Ansible roles](https://github.com/francomile/ansible-role-common/actions/workflows/ansible_lint.yml/badge.svg)](https://github.com/francomile/ansible-role-common/actions/workflows/ansible_lint.yml)
 
