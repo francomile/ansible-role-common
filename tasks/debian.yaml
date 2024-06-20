@@ -71,14 +71,6 @@
     state: absent
     purge: true
 
-- name: "Common | Install varnishgather"
-  ansible.builtin.get_url:
-    url: "https://raw.githubusercontent.com/varnish/varnishgather/master/varnishgather"
-    dest: "/usr/local/bin/varnishgather"
-    mode: "0755"
-    owner: root
-    group: root
-
 - name: "Common | Set timezone to {{ common_timezone }}"
   community.general.timezone:
     name: "{{ common_timezone }}"
