@@ -20,7 +20,7 @@
 ```yaml
 roles:
   - {
-    role: common,
+    role: francomile.common,
     tags: ["common"]
     }
 ```
